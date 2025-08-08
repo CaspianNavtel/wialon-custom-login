@@ -1,7 +1,5 @@
 import LoginIllustration from "./components";
 
-
-
 function App() {
 
   const handleLogin = () => {
