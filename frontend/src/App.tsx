@@ -1,18 +1,37 @@
+import { useState } from "react";
 import LoginIllustration from "./components";
+import axios from 'axios'
+
 
 function App() {
+  const [username, setUsername] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleLogin = () => {
-    // Token login və yönləndirmə
-    const token = "57a23bdf1e0db9ae5132a5ed1c6d8dfb99D127BEEED54B0FC216E94430EF7200731BFF5B"; // Əvvəlcədən yaratdığın token
-    window.location.href = `https://local.caspiannavtel.az/?token=${token}`;
-    console.log("Token:", token); // Konsola tokeni yazdır
+    setError('')
+    if (!username || !password) {
+      setError('Username və password bo. ola bilmez')
+      return
+    }
+    console.log("aaaa", typeof username)
+    setLoading(true)
+
+    axios.post('http://127.0.0.1:8000/api/wialon-get-token/', {
+      username,
+      password
+    }).then((response) => window.location.href = `https://local.caspiannavtel.az/?token=${response.data.token}`)
+      .catch((error) => console.error("Login error:", error))
+      .finally(() => setLoading(false))
+
   };
 
 
   return (
     <>
       <div className="flex min-h-screen">
+
 
         {/* Left side - Enhanced Red Gradient with Illustration */}
         <div className="w-1/2 bg-gradient-to-br from-[#16a2db] via-[#047cab] to-[#014661] flex items-center justify-center relative overflow-hidden">
@@ -37,8 +56,10 @@ function App() {
 
             <input
 
-              type="email"
-              placeholder="Email"
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => { setUsername(e.target.value) }}
               className="mt-4 w-full p-3 border-2 border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#16a2db] focus:border-[#01506f] transition-colors duration-300"
             />
 
@@ -46,6 +67,8 @@ function App() {
 
               type="password"
               placeholder="Password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value) }}
               className="mt-4 w-full p-3 border-2 border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#16a2db] focus:border-[#01506f] transition-colors duration-300"
             />
 
@@ -56,9 +79,9 @@ function App() {
               </a>
             </div>
             <button onClick={handleLogin} className="mt-6 w-full bg-gradient-to-r from-[#16a2db] via-[#047cab] to-[#014661] text-white py-3 rounded-md hover:from-[#0c95cb] hover:via-[#047cab] hover:to-[#014661] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Login
+              Login {loading && <p>Loading...</p>}
             </button>
-
+            {error && <p>{error}</p>}
           </div>
         </div>
 
